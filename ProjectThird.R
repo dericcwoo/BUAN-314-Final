@@ -294,3 +294,27 @@ city_treemap <- ggplot(top_cities, aes(area = CustomerCount, fill = city, label 
   theme_minimal()
 print(city_treemap)
 # Mount Vernon is on top with 20 customers
+
+##############
+## QUERY 17 ##
+##############
+
+## Customer distribution by state ##
+state_distribution <- customers_data %>% 
+  group_by(state) %>% 
+  summarise(CustomerCount = n()) %>% 
+  arrange(desc(CustomerCount))
+
+state_distribution <- state_distribution %>% 
+  mutate(Percentage = round((CustomerCount / sum(CustomerCount)) * 100, 1))
+
+state_pie <- ggplot(state_distribution, aes(x = "", y = CustomerCount, fill = state)) +
+  geom_bar(stat = "identity", width = 1, show.legend = TRUE) +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = paste0(Percentage, "%")), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "Customer Distribution by State", x = NULL, y = NULL) +
+  theme_void() +
+  theme(legend.title = element_blank(),
+        plot.title = element_text(hjust = 0.5))
+print(state_pie)
