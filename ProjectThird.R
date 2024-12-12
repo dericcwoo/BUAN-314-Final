@@ -271,3 +271,26 @@ FROM ranked_products
 WHERE rank = 1
 ORDER BY store_name;"
 sqldf(query_15)
+
+##############
+## QUERY 16 ##
+##############
+
+## Treemap of top 10 cities by customer count ##
+install.packages("treemapify")
+library(treemapify)
+
+# Summarize customer distribution by city
+city_distribution <- customers_data %>% 
+  group_by(city) %>% 
+  summarise(CustomerCount = n()) %>% 
+  arrange(desc(CustomerCount))
+
+top_cities <- city_distribution %>% slice_max(CustomerCount, n = 10)
+city_treemap <- ggplot(top_cities, aes(area = CustomerCount, fill = city, label = paste(city, CustomerCount, sep = "\n"))) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "bold", colour = "white", place = "centre", grow = TRUE) +
+  labs(title = "Top 10 Cities by Customer Count") +
+  theme_minimal()
+print(city_treemap)
+# Mount Vernon is on top with 20 customers
